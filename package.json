@@ -1,0 +1,32 @@
+{
+  "name": "ouroboros",
+  "version": "1.0.0",
+  "description": "Network peer membership discovery and dissemination.",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nomilous/ouroboros.git"
+  },
+  "keywords": [
+    "network",
+    "cluster",
+    "peers",
+    "membership",
+    "dissemination"
+  ],
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/nomilous/ouroboros/issues"
+  },
+  "homepage": "https://github.com/nomilous/ouroboros#readme",
+  "devDependencies": {
+    "mocha": "^3.2.0"
+  },
+  "dependencies": {
+    "debug": "^2.4.5"
+  }
+}
