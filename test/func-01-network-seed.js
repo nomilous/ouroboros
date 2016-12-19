@@ -7,7 +7,6 @@ const Ouroboros = require('../');
 
 describe(filename, () => {
 
-
   context('validations', () => {
 
     it('requires a join list', done => {
@@ -17,9 +16,7 @@ describe(filename, () => {
       ouroboros.start([])
 
         .catch(error => {
-
           expect(error.toString()).to.equal('Error: No hosts to join');
-
         })
 
         .then(done).catch(done);
@@ -27,7 +24,6 @@ describe(filename, () => {
     });
 
   });
-
 
   context('seed new network', () => {
 
