@@ -1,7 +1,8 @@
-const {basename, dirname, SEP} = require('path');
+const {basename, dirname, sep} = require('path');
 const filename = basename(__filename);
 const expect = require('expect.js');
-const {Server} = require('net');
+const net = require('net');
+const tls = require('tls');
 
 const Ouroboros = require('../');
 
@@ -13,7 +14,7 @@ describe(filename, () => {
 
       let ouroboros = new Ouroboros();
 
-      ouroboros.start([])
+      ouroboros.start([], {}, true)
 
         .catch(error => {
           expect(error.toString()).to.equal('Error: No hosts to join');
@@ -42,7 +43,7 @@ describe(filename, () => {
         '127.0.0.1:55532',
         '127.0.0.1:55533',
         '127.0.0.1:55534'
-      ], true)
+      ], {}, true)
 
         .then(() => {
           expect(ouroboros.server.address()).to.eql({
@@ -53,7 +54,24 @@ describe(filename, () => {
         })
 
         .then(() => {
-          expect(ouroboros.server).to.be.an(Server);
+          expect(ouroboros.server).to.be.an(net.Server);
+        })
+
+    });
+
+    it('fails to start on bad listen ', () => {
+
+      ouroboros = new Ouroboros({host: '127.0.0.44'});
+
+      return ouroboros.start([
+        '127.0.0.1:55531',
+        '127.0.0.1:55532',
+        '127.0.0.1:55533',
+        '127.0.0.1:55534'
+      ], {}, true)
+
+        .catch(error => {
+          expect(error.code).to.equal('EADDRNOTAVAIL');
         })
 
     });
@@ -61,8 +79,8 @@ describe(filename, () => {
     it('starts a new closed (encrypted) network', () => {
 
       ouroboros = new Ouroboros({
-        keyFile: dirname(__dirname) + SEP + 'server.key',
-        certFile: dirname(__dirname) + SEP + 'server.cert',
+        keyFile: dirname(__dirname) + sep + 'server.key',
+        certFile: dirname(__dirname) + sep + 'server.cert',
         secret: 'secret',
       });
 
@@ -71,7 +89,7 @@ describe(filename, () => {
         '127.0.0.1:55532',
         '127.0.0.1:55533',
         '127.0.0.1:55534'
-      ], true)
+      ], {}, true)
 
         .then(() => {
           expect(ouroboros.server.address()).to.eql({
@@ -82,8 +100,32 @@ describe(filename, () => {
         })
 
         .then(() => {
-          expect(ouroboros.server).to.be.an(Server);
+          expect(ouroboros.server).to.be.an(tls.Server);
         })
+
+    });
+
+    it('fails to start on bad keyFile or certFile path', done => {
+
+      ouroboros = new Ouroboros({
+        keyFile: dirname(__dirname) + sep + 'server.key',
+        certFile: dirname(__dirname) + sep + 'wrong.cert', // <--------
+        secret: 'secret',
+      });
+
+      ouroboros.start([
+        '127.0.0.1:55531',
+        '127.0.0.1:55532',
+        '127.0.0.1:55533',
+        '127.0.0.1:55534'
+      ], {}, true)
+
+        .catch(error => {
+          expect(error.code).to.equal('ENOENT');
+        })
+
+        .then(done).catch(done);
+
 
     });
 
